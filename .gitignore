@@ -1,0 +1,4 @@
+back/task.db
+__pycache__/
+back/__pycache__/
+front/__pycache__/
