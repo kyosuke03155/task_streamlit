@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 from datetime import datetime
-from tools import priority_to_index, index_to_priority, filter_complete_dic, sort_deadline_dic, sort_priority_dic
+from tools import priority_to_index, index_to_priority, filter_complete_dic, sort_deadline_dic, sort_priority_dic, filter_priority_dic
 
 def change_complete(record):
     # タスク完了状態の変更
@@ -41,7 +41,7 @@ def list_page():
     # 優先度ソート
     with col4:
         sort_priority = st.selectbox('優先度ソート', ['無効','昇順', '降順'])
-    params = {'filter_complete': filter_complete, 'filter_priority': filter_complete_dic[filter_priority], 'sort_deadline': sort_deadline_dic[sort_deadline], 'sort_priority': sort_priority_dic[sort_priority]}
+    params = {'filter_complete': filter_complete_dic[filter_complete], 'filter_priority': filter_priority_dic[filter_priority], 'sort_deadline': sort_deadline_dic[sort_deadline], 'sort_priority': sort_priority_dic[sort_priority]}
     url = 'http://127.0.0.1:8000/tasks'
     res = requests.get(url, params=params)
     records = res.json()
@@ -91,7 +91,7 @@ def list_page():
                 # タスク内容入力
                 content: str = st.text_input('タスク内容', value=record.get('content') ,max_chars=100)
                 # 優先度入力
-                priority: str = st.selectbox('優先度', ['高', '中', '低'], index=record.get('priority'))
+                priority: str = st.selectbox('優先度', ['高', '中', '低'], index=2-int(record.get('priority')))
                 # 期限入力
                 deadline = st.date_input('期限', value=datetime.strptime(record.get('deadline'), '%Y-%m-%d').date())
                 col1, col2, col3, col4, col5 = st.columns(5)

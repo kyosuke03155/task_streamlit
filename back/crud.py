@@ -3,14 +3,13 @@ from sqlalchemy import case, desc
 import model, schema
 from datetime import datetime
 
-# メモ一覧取得
-def get_tasks(db: Session, skip: int = 0, filter_complete: str="全て",filter_priority: str = "全て",sort_deadline: str = "none",sort_priority: str = "none", limit: int = 100):
+# タスク一覧取得
+def get_tasks(db: Session, skip: int = 0, filter_complete: str="none",filter_priority: str = "none",sort_deadline: str = "none",sort_priority: str = "none", limit: int = 100):
     q = db.query(model.Task)
     filter_priority_dic = {
-        "none": '全て',
-        "high": '高',
-        "middle": '中',
-        "low": '低',
+        "high": 2,
+        "middle": 1,
+        "low": 0,
     }
     if filter_priority != "none":
         q = q.filter(model.Task.priority == filter_priority_dic[filter_priority])
@@ -29,7 +28,7 @@ def get_tasks(db: Session, skip: int = 0, filter_complete: str="全て",filter_p
 
     return q.offset(skip).limit(limit).all()
 
-# メモ登録
+# タスク登録
 def create_task(db: Session, task: schema.TaskCreatingSchema):
     db_task = model.Task(content = task.content,  priority = task.priority, deadline = task.deadline)
     db.add(db_task)
@@ -37,6 +36,7 @@ def create_task(db: Session, task: schema.TaskCreatingSchema):
     db.refresh(db_task)
     return db_task
 
+# タスク削除
 def delete_task(db: Session, task_id: int):
     db_task = db.query(model.Task).filter(model.Task.task_id == task_id).one()
     if db_task:
